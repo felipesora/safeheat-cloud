@@ -39,24 +39,13 @@ docker build -t safeheat-api .
 docker network create safeheat-network
 
 # 3. Subir o container do banco PostgreSQL
-docker run -d --name postgres-db --network safeheat-network \
-  -e POSTGRES_DB=safeheatdb \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=admin123 \
-  -v postgres_data:/var/lib/postgresql/data \
-  -p 5432:5432 \
-  postgres:16
+docker run -d --name postgres-db --network safeheat-network -e POSTGRES_DB=safeheatdb -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin123 -v postgres_data:/var/lib/postgresql/data -p 5432:5432 postgres:16
 
 # 4. Verificar os logs do banco
 docker logs postgres-db
 
 # 5. Subir o container da API Java
-docker run -d --name safeheat-api --network safeheat-network \
-  -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/safeheatdb \
-  -e SPRING_DATASOURCE_USERNAME=admin \
-  -e SPRING_DATASOURCE_PASSWORD=admin123 \
-  -p 8080:8080 \
-  safeheat-api
+docker run -d --name safeheat-api --network safeheat-network -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/safeheatdb -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 -p 8080:8080 safeheat-api
 
 # 6. Verificar os logs da API
 docker logs safeheat-api
