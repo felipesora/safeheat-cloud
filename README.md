@@ -1,124 +1,114 @@
-# 🌡️ SafeHeat - Backend Java
+# 🔥 SafeHeat - Cloud
 
-API desenvolvida em **Java 21 com Spring Boot** para o projeto **SafeHeat**, parte da entrega do Global Solution da FIAP. A aplicação fornece um CRUD completo e se conecta a um banco de dados **Oracle**, com tudo rodando em containers **Docker**.
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-- Java 21  
-- Spring Boot  
-- Maven  
-- Oracle Database  
-- Docker  
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-Cloud GS/
-│
-├── safeheat-backend-java-main/
-│   └── target/
-│       └── safeheat-backend-java-0.0.1-SNAPSHOT.jar
-│
-└── Dockerfile
-```
-
----
-
-## ⚙️ Pré-requisitos
-
-Antes de rodar a aplicação, você precisa ter instalado:
-
-- [Docker](https://www.docker.com/)
-- [Java 21](https://jdk.java.net/21/) *(opcional, caso deseje compilar localmente)*
-- [Maven](https://maven.apache.org/) *(para gerar o .jar)*
-
----
-
-## 🛠️ Como compilar o projeto
-
-Se ainda não gerou o `.jar`, execute o seguinte comando a partir da pasta do projeto:
-
-```bash
-cd safeheat-backend-java-main
-mvn clean package
-```
-
-Isso irá gerar o arquivo `safeheat-backend-java-0.0.1-SNAPSHOT.jar` na pasta `target/`.
-
----
-
-## 🐳 Como rodar com Docker
-
-1. Certifique-se de estar na raiz do projeto (`Cloud GS`) e que o `Dockerfile` esteja presente.
-2. Para construir a imagem Docker da aplicação:
-
-```bash
-docker build -t safeheat-api .
-```
-
-3. Em seguida, rode o container:
-
-```bash
-docker run -d -p 8080:8080 --name safeheat-container safeheat-api
-```
-
----
-
-## 🌐 Acessando a API
-
-A API estará acessível em:
-
-```
-http://localhost:8080
-```
-
-### Exemplos de endpoints (ajuste conforme sua implementação):
-
-- `GET /api/usuarios`
-- `POST /api/usuarios`
-- `PUT /api/usuarios/{id}`
-- `DELETE /api/usuarios/{id}`
-
----
-
-## 🧼 Comandos úteis
-
-Parar o container:
-
-```bash
-docker stop safeheat-container
-```
-
-Remover o container:
-
-```bash
-docker rm safeheat-container
-```
-
-Visualizar os logs do container:
-
-```bash
-docker logs safeheat-container
-```
-
----
-
-## 📌 Observações
-
-- Certifique-se de que o banco Oracle esteja rodando e acessível (pode ser em outro container).
-- O backend pode depender de variáveis de ambiente para se conectar ao banco — ajuste no Dockerfile ou na execução se necessário.
-- O container roda como um usuário não-root para mais segurança.
+O **SafeHeat - Cloud** é um projeto que demonstra a utilização de **containers Docker** para orquestrar uma aplicação completa com **Java (Spring Boot)** e **PostgreSQL**. A ideia é executar dois containers simultaneamente: um para o banco de dados e outro para a API backend, conectados através de uma rede Docker.
 
 ---
 
 ## 👥 Integrantes
 
-- **Felipe Ulson Sora** – RM555462 – [@felipesora](https://github.com/felipesora)  
-- **Augusto Lope Lyra** – RM558209 – [@lopeslyra10](https://github.com/lopeslyra10)  
+- **Felipe Ulson Sora** – RM555462 – [@felipesora](https://github.com/felipesora)
+- **Augusto Lopes Lyra** – RM558209 – [@lopeslyra10](https://github.com/lopeslyra10)
 - **Vinicius Ribeiro Nery Costa** – RM559165 – [@ViniciusRibeiroNery](https://github.com/ViniciusRibeiroNery)
 
-**FIAP – Global Solution 2025**
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- Java 21 + Spring Boot
+- PostgreSQL 16
+- Docker
+- Maven
+
+---
+
+## 🧱 Estrutura com Docker
+
+O projeto utiliza uma rede Docker personalizada chamada `safeheat-network` para conectar os containers da aplicação. Abaixo está o passo a passo para executar tudo corretamente:
+
+---
+
+## ⚙️ Passo a passo para rodar o projeto com Docker
+
+```bash
+# 1. Build da imagem da API
+docker build -t safeheat-api .
+
+# 2. Criação da rede Docker
+docker network create safeheat-network
+
+# 3. Subir o container do banco PostgreSQL
+docker run -d --name postgres-db --network safeheat-network \
+  -e POSTGRES_DB=safeheatdb \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=admin123 \
+  -v postgres_data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  postgres:16
+
+# 4. Verificar os logs do banco
+docker logs postgres-db
+
+# 5. Subir o container da API Java
+docker run -d --name safeheat-api --network safeheat-network \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/safeheatdb \
+  -e SPRING_DATASOURCE_USERNAME=admin \
+  -e SPRING_DATASOURCE_PASSWORD=admin123 \
+  -p 8080:8080 \
+  safeheat-api
+
+# 6. Verificar os logs da API
+docker logs safeheat-api
+```
+
+## 📬 Exemplos de uso da API (corpo das requisições JSON)
+
+### 👤 Cadastro de Usuário
+
+```jsonc
+{
+    "nome": "Felipe Sora",
+    "email": "felipesora@email.com",
+    "senha": "felipe123"
+}
+```
+
+### 📍 Cadastro de Local
+
+```jsonc
+{
+    "nome": "Casa",
+    "rua": "Avenida Vila Ema",
+    "numero": "1005",
+    "complemento": "apto 136",
+    "bairro": "Vila Prudente",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "03156000",
+    "id_usuario": ""
+}
+```
+
+### 🌡️ Envio de Alerta de Calor
+
+```jsonc
+{
+  "temperatura": "45",
+  "mensagem": "Risco alto de insolação, evite exposição prolongada ao sol",
+  "nivel_risco": "Alta",
+  "id_local": ""
+}
+```
+
+## 🎥 Demonstração em vídeo
+
+Assista ao passo a passo completo no YouTube pelo link abaixo:
+
+[📺 Clique aqui para assistir ao vídeo](https://github.com/felipesora)
+
+--- 
+
+## 📂 Repositório da API Java
+
+O código-fonte da API desenvolvida em Java (Spring Boot) está disponível no GitHub:
+
+🔗 [Acessar repositório da API Java](https://github.com/felipesora/safeheat-backend-java)
