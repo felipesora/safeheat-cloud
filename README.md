@@ -1,5 +1,7 @@
 # 🔥 SafeHeat - Cloud
 
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/felipesora/safeheat-cloud)
+
 O **SafeHeat - Cloud** é um projeto que demonstra a utilização de **containers Docker** para orquestrar uma aplicação completa com **Java (Spring Boot)** e **PostgreSQL**. A ideia é executar dois containers simultaneamente: um para o banco de dados e outro para a API backend, conectados através de uma rede Docker.
 
 ---
@@ -103,7 +105,7 @@ docker logs safeheat-api
 
 Assista ao passo a passo completo no YouTube pelo link abaixo:
 
-[📺 Clique aqui para assistir ao vídeo](https://github.com/felipesora)
+[📺 Clique aqui para assistir ao vídeo](https://www.youtube.com/watch?v=ATThgLka8XI)
 
 --- 
 
